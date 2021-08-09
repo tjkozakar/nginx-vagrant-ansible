@@ -20,4 +20,9 @@ The aim of this application is simple: run a single command that automatically c
 There are some issues in regards to Python2 vs Python3. Python2 is deprecated, although it ships with CentOS7 as the default python interpreter. Initially this caused several problems in pip package configuration and running the docker_container module in Ansible. To get around this problem, I added a custom variable to several of the Ansible tasks specifically delineating that Python3 should be utilized. 
 
 
-The end user should only need to run a single command for the entire infrastructure to deploy and server web requests: vagrant up --provision. Proceed to your web browser and check localhost:8086 to view the welcoming nginx screen. 
+The end user should only need to run a single command for the entire infrastructure to deploy and server web requests: 
+
+1. vagrant up --provision. 
+
+
+Proceed to your web browser and check localhost:8086 to view the welcoming nginx screen. 
