@@ -1,0 +1,82 @@
+---
+- name: installing_docker_nginx
+  hosts: all
+  user: vagrant
+  become: true
+  
+  tasks:
+
+    - name: Getting base packages for service and debugging
+      yum:   
+        name: "{{ item }}"
+        state: latest
+      loop:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+        - epel-release
+
+    - name: Setting up docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+        mode: 0644
+
+    - name: Configure docker service for debugging
+      yum:   
+        name: "{{ item }}"
+        state: latest
+      loop:
+        - docker-ce
+        - docker-ce-cli 
+        - containerd.io
+        
+    - name: Install python3-pip
+      package: 
+        name: "python3-pip"
+        state: present
+        update_cache: true
+
+    - name: Ensure python3 basics are here
+      package:
+        name: ['python3-pip', 'python3-setuptools']
+        state: latest
+        update_cache: yes
+
+    - name: Getting docker with python3-pip 
+      pip:
+        name: "docker"
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Getting selectors with python3-pip 
+      pip:
+        name: "selectors"
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add user vagrant to docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+    
+    - name: Pull docker container for debugging
+      command: docker pull nginx:alpine
+
+    - name: Run web container 
+      docker_container:
+        image: nginx:alpine
+        name: webserver
+        state: started
+        recreate: yes
+        ports:
+        - "80:80"
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
