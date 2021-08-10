@@ -17,8 +17,7 @@ Once these commands have completed, and you have successfully downloaded and ins
 
 The aim of this application is simple: run a single command that automatically configures an nginx:alpine web container provided by Docker. While this could normally be achieved by simply running the docker container manually on your command line, I wanted to emulate a CentOS7 server environment running a docker container via an open port. The base Vagrantfile performs the necessary steps of configuring a lightweight server with basic networking attachments for SSH and HTTP access. However, the Vagrantfile does not contain the necessary configurations for installing and configuring the core Docker software, along with its dependencies. To achieve this, I set up a simple Ansible provisioner step in the Vagrantfile which utilizes the attached dockerize-playbook.yml file. 
 
-There are some issues in regards to Python2 vs Python3. Python2 is deprecated, although it ships with CentOS7 as the default python interpreter. Initially this caused several problems in pip package configuration and running the docker_container module in Ansible. To get around this problem, I added a custom variable to several of the Ansible tasks specifically delineating that Python3 should be utilized. 
-
+systemd is utilized in this infrastructure stack to daemonize the nginx:alpine docker container. Attached to this repo you should see a docker.nginx.service unit file, and there should be no user interraction needed for further configuration. Ansible copies this file into the proper destination, enables and starts the service at runtime. 
 
 The end user should only need to run a single command for the entire infrastructure to deploy and server web requests: 
 
