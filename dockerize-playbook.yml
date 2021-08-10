@@ -70,13 +70,14 @@
     - name: Pull docker container for debugging
       command: docker pull nginx:alpine
 
-    - name: Run web container 
-      docker_container:
-        image: nginx:alpine
-        name: webserver
-        state: started
-        recreate: yes
-        ports:
-        - "80:80"
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
+    - name: Add NGINX Docker systemd service
+      become: true
+      copy: 
+        src: docker.nginx.service
+        dest: /etc/systemd/system/docker.nginx.service
+    
+    - name: enable docker nginx service
+      service: name=docker.nginx.service enabled=yes
+   
+    - name: start docker nginx service
+      service: name=docker.nginx.service state=started
